@@ -1,0 +1,3 @@
+# Globs matched case-insensitively against identifier, bundle_id, title or app.
+# See candidates with: menu-items list
+com.apple.TextInputMenuAgent
