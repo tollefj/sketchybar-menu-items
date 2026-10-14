@@ -28,4 +28,10 @@ public enum Accessibility {
         var size = CGSize.zero
         return AXValueGetValue(value, .cgSize, &size) ? size : nil
     }
+
+    static func setPosition(_ element: AXUIElement, _ point: CGPoint) {
+        var point = point
+        guard let value = AXValueCreate(.cgPoint, &point) else { return }
+        AXUIElementSetAttributeValue(element, kAXPositionAttribute as CFString, value)
+    }
 }

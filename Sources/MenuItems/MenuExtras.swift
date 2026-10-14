@@ -19,9 +19,26 @@ public enum MenuExtras {
 
     public static func press(_ target: String) throws {
         let item = try element(for: target)
+        let display = ActiveDisplay.bounds()
         let result = AXUIElementPerformAction(item, kAXPressAction as CFString)
         guard result == .success || result == .cannotComplete else {
             throw MenuItemsError.pressFailed(target, result.rawValue)
+        }
+        if let display { moveMenu(of: item, to: display) }
+    }
+
+    private static func moveMenu(of item: AXUIElement, to display: CGRect) {
+        let deadline = Date().addingTimeInterval(0.5)
+        while Date() < deadline {
+            let menu: AXUIElement? = (Accessibility.attribute(item, kAXChildrenAttribute) as [AXUIElement]?)?.first
+            if let menu, let position = Accessibility.position(menu), let size = Accessibility.size(menu) {
+                let frame = CGRect(origin: position, size: size)
+                if !display.intersects(frame) {
+                    Accessibility.setPosition(menu, ActiveDisplay.origin(for: size, on: display))
+                }
+                return
+            }
+            usleep(20_000)
         }
     }
 
